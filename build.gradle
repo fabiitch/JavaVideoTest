@@ -1,0 +1,55 @@
+plugins {
+  id 'java-library'
+}
+repositories {
+  mavenCentral()
+  maven { url 'https://s01.oss.sonatype.org' }
+  gradlePluginPortal()
+  mavenLocal()
+  google()
+  maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+  maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+  maven { url 'https://jitpack.io' }
+}
+sourceSets {
+  main {
+    java {
+      setSrcDirs(["src/main/java", "native/generated"])
+    }
+  }
+}
+
+tasks.register("jextractGst", Exec) {
+  workingDir project.rootDir
+
+  environment "GSTREAMER_ROOT", "C:\\Program Files\\gstreamer\\1.0\\msvc_x86_64"
+
+  commandLine "cmd", "/c", "${project.rootDir}\\native\\scripts\\jextract_gst.cmd"
+}
+
+
+
+dependencies {
+  implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+  implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+
+  implementation("org.slf4j:slf4j-api:$slf4jVersion")
+  implementation("commons-io:commons-io:$commonsIOVersion")
+
+  implementation("org.freedesktop.gstreamer:gst1-java-core:$gst1Version")
+  implementation "net.java.dev.jna:jna:$jnaVersion"
+  implementation "net.java.dev.jna:jna-platform:$jnaVersion"  // <—
+
+  // https://mvnrepository.com/artifact/commons-io/commons-io
+  testImplementation platform("org.junit:junit-bom:$junitVersion")
+  testImplementation "org.junit.jupiter:junit-jupiter"
+
+  compileOnly "org.projectlombok:lombok:$lombokVersion"
+  testCompileOnly "org.projectlombok:lombok:$lombokVersion"
+  annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+  testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+}
+
+test {
+  useJUnitPlatform()
+}
